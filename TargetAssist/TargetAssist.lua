@@ -6,40 +6,45 @@ function TA_OnUpdate()
 	if math.floor(time) > lastUpdate then
 		lastUpdate = time;
 
-		local prefix = ""
-		local num = 0
+		TA_ScanMarks(nil)
+	end
+end
 
-		if GetNumRaidMembers() > 0 then
-			prefix = "RAID"
-			num = GetNumRaidMembers()
-		elseif GetNumPartyMembers() > 0 then
-			prefix = "PARTY"
-			num = GetNumPartyMembers()
-		end
+function TA_ScanMarks(newTarget)
+	local prefix = ""
+	local num = 0
 
+	if GetNumRaidMembers() > 0 then
+		prefix = "RAID"
+		num = GetNumRaidMembers()
+	elseif GetNumPartyMembers() > 0 then
+		prefix = "PARTY"
+		num = GetNumPartyMembers()
+	end
+
+	if num > 0 then
 		local marks = {}
 
-		if num > 0 then
+		for i = 1,num,1 do
+			local icon = GetRaidTargetIndex(prefix..i.."target")
 
-			for i = 1,num,1 do
-				local icon = GetRaidTargetIndex(prefix..i.."target")
-
-				if icon ~= nil and UnitExists(prefix..i.."target") then
-					marks[icon] = prefix..i.."target"
+			if icon ~= nil and UnitExists(prefix..i.."target") then
+				marks[icon] = prefix..i.."target"
+				if newTarget == icon then
+					TargetUnit(marks[icon])
 				end
 			end
-
-			local counter = 1
-			counter = TA_UpdateIcon(counter,8,marks[8])
-			counter = TA_UpdateIcon(counter,7,marks[7])
-			counter = TA_UpdateIcon(counter,4,marks[4])
-			counter = TA_UpdateIcon(counter,6,marks[6])
-			counter = TA_UpdateIcon(counter,5,marks[5])
-			counter = TA_UpdateIcon(counter,3,marks[3])
-			counter = TA_UpdateIcon(counter,2,marks[2])
-			counter = TA_UpdateIcon(counter,1,marks[1])
-
 		end
+
+		local counter = 1
+		counter = TA_UpdateIcon(counter,8,marks[8])
+		counter = TA_UpdateIcon(counter,7,marks[7])
+		counter = TA_UpdateIcon(counter,4,marks[4])
+		counter = TA_UpdateIcon(counter,6,marks[6])
+		counter = TA_UpdateIcon(counter,5,marks[5])
+		counter = TA_UpdateIcon(counter,3,marks[3])
+		counter = TA_UpdateIcon(counter,2,marks[2])
+		counter = TA_UpdateIcon(counter,1,marks[1])
 	end
 end
 
@@ -57,13 +62,8 @@ function TA_UpdateIcon(counter,index,target)
 	end
 end
 
-function TA_TargetIcon(index)
-	for i=1,8,1 do
-		local icon = getglobal("TAIcon"..i)
-		if icon:IsVisible() and icon.index ~= nil and icon.index == index then
-			TargetUnit(icon.target)
-		end
-	end
+function TA_TargetIcon(newTarget)
+	TA_ScanMarks(newTarget)
 end
 
 function TA_OnClick(frame)
