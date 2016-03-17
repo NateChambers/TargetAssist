@@ -36,6 +36,16 @@ function TA_ScanMarks(newTarget)
 					foundTarget = true
 				end
 			end
+
+			local icon2 = GetRaidTargetIndex(prefix..i)
+
+			if icon2 ~= nil and UnitExists(prefix..i) then
+				marks[icon2] = prefix..i
+				if newTarget == icon2 then
+					TargetUnit(marks[icon2])
+					foundTarget = true
+				end
+			end
 		end
 
 		local counter = 1
@@ -69,7 +79,6 @@ end
 function TA_TargetIcon(newTarget)
 	if not TA_ScanMarks(newTarget) then
 
-		-- Target Nearest Backup
 		for i=0,20 do 
 			if GetRaidTargetIndex("target") == nil or GetRaidTargetIndex("target") ~= newTarget then
 				TargetNearestEnemy()
@@ -77,6 +86,8 @@ function TA_TargetIcon(newTarget)
 				return
 			end
 		end
+
+		ClearTarget()
 	end
 end
 
