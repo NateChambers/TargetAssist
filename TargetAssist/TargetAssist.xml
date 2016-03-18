@@ -1,14 +1,5 @@
 <Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 	<Script file="TargetAssist.lua"/>
-	
-	<!-- Frame to handle all core events -->
-	<Frame name="TA_core">
-		<Scripts>
-			<OnUpdate>
-				TA_OnUpdate();
-			</OnUpdate>
-		</Scripts>
-	</Frame>
 
 	<Frame name="TAIconTemplate" drawLayer="BORDER" virtual="true" hidden="true">
 		<Size>
@@ -29,6 +20,11 @@
 		<Scripts>
 			<OnLoad>
 				this:RegisterForDrag("LeftButton")
+				this:SetWidth(ta_settings.size)
+				this:SetHeight(ta_settings.size)
+				this:SetScript("OnMouseDown", function()
+					TA_OnClick(this)
+				end)
 			</OnLoad>
 			<OnDragStart>
 				TAContainer:StartMoving()
@@ -36,9 +32,6 @@
 			<OnDragStop>
 				TAContainer:StopMovingOrSizing()
 			</OnDragStop>
-			<OnMouseUp>
-				TA_OnClick(this)
-			</OnMouseUp>
 		</Scripts>
 	</Frame>
 
@@ -123,6 +116,11 @@
 				</Anchors>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnUpdate>
+				TA_OnUpdate();
+			</OnUpdate>
+		</Scripts>
 	</Frame>
 
 </Ui>

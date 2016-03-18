@@ -3,7 +3,7 @@ BINDING_HEADER_TARGETASSIST = "Target Assist";
 
 function TA_OnUpdate()
 	local time = GetTime()
-	if math.floor(time) > lastUpdate then
+	if time - lastUpdate > 0.2 then
 		lastUpdate = time;
 
 		TA_ScanMarks(nil)
@@ -14,6 +14,7 @@ function TA_ScanMarks(newTarget)
 	local prefix = ""
 	local num = 0
 	local foundTarget = false
+	local counter = 1
 
 	if GetNumRaidMembers() > 0 then
 		prefix = "RAID"
@@ -29,7 +30,7 @@ function TA_ScanMarks(newTarget)
 		for i = 1,num,1 do
 			local icon = GetRaidTargetIndex(prefix..i.."target")
 
-			if icon ~= nil and UnitExists(prefix..i.."target") then
+			if icon ~= nil and UnitExists(prefix..i.."target") and not UnitIsDead(prefix..i.."target") then
 				marks[icon] = prefix..i.."target"
 				if newTarget == icon then
 					TargetUnit(marks[icon])
@@ -48,7 +49,6 @@ function TA_ScanMarks(newTarget)
 			end
 		end
 
-		local counter = 1
 		counter = TA_UpdateIcon(counter,8,marks[8])
 		counter = TA_UpdateIcon(counter,7,marks[7])
 		counter = TA_UpdateIcon(counter,4,marks[4])
@@ -59,6 +59,8 @@ function TA_ScanMarks(newTarget)
 		counter = TA_UpdateIcon(counter,1,marks[1])
 	end
 
+	TA_ClearMarks(counter)
+
 	return foundTarget
 end
 
@@ -66,9 +68,17 @@ function TA_UpdateIcon(counter,index,target)
 	if target ~= nil then
 		local icon = getglobal("TAIcon"..counter)
 		icon:Show()
-		SetRaidTargetIconTexture(getglobal("TAIcon"..counter.."Texture"),index)
 		icon.target = target
 		icon.index = index
+
+		SetRaidTargetIconTexture(getglobal("TAIcon"..counter.."Texture"),index)
+
+		if GetRaidTargetIndex("target") == index then
+			icon:SetAlpha(ta_settings.selectedAlpha)
+		else
+			icon:SetAlpha(ta_settings.unselectedAlpha)
+		end
+
 		return counter + 1
 	else
 		getglobal("TAIcon"..counter):Hide()
@@ -76,9 +86,18 @@ function TA_UpdateIcon(counter,index,target)
 	end
 end
 
+function TA_ClearMarks(counter)
+	for i=counter,8,1 do
+		if getglobal("TAIcon"..i):IsVisible() then
+			getglobal("TAIcon"..i):Hide()
+		end
+	end
+end
+
 function TA_TargetIcon(newTarget)
 	if not TA_ScanMarks(newTarget) then
 
+		-- No marks found. Check nearest enemies.
 		for i=0,20 do 
 			if GetRaidTargetIndex("target") == nil or GetRaidTargetIndex("target") ~= newTarget then
 				TargetNearestEnemy()
@@ -95,4 +114,30 @@ function TA_OnClick(frame)
 	if frame.target ~= nil then
 		TargetUnit(frame.target)
 	end
+end
+
+function TA_TargetNextMark()
+	local nextIcon = 1
+	local currentIndex = GetRaidTargetIndex("target")
+
+	if not getglobal("TAIcon1"):IsVisible() then
+		TargetNearestEnemy()
+		return
+	end
+
+	if currentIndex ~= nil and UnitExists("target") then
+		for i=1,8,1 do
+			local icon = getglobal("TAIcon"..i)
+			if icon.index == currentIndex then
+				nextIcon = i + 1
+				break
+			end
+		end
+	end
+
+	if not getglobal("TAIcon"..nextIcon):IsVisible() then
+		nextIcon = 1
+	end
+
+	TA_OnClick(getglobal("TAIcon"..nextIcon))
 end

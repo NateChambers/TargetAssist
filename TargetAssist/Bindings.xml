@@ -1,5 +1,8 @@
 <Bindings>
-	<Binding name="Target Skull" header="TARGETASSIST">
+	<Binding name="Target Next Mark" header="TARGETASSIST">
+		TA_TargetNextMark()
+	</Binding>
+	<Binding name="Target Skull">
 		TA_TargetIcon(8)
 	</Binding>
 	<Binding name="Target Cross">
