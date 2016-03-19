@@ -38,15 +38,17 @@ function TA_ScanMarks(newTarget)
 				end
 			end
 
-			local icon2 = GetRaidTargetIndex(prefix..i)
-
-			if icon2 ~= nil and UnitExists(prefix..i) then
-				marks[icon2] = prefix..i
-				if newTarget == icon2 then
-					TargetUnit(marks[icon2])
-					foundTarget = true
+			if includeFriendly == 1 then
+				local icon2 = GetRaidTargetIndex(prefix..i)
+				if icon2 ~= nil and UnitExists(prefix..i) then
+					marks[icon2] = prefix..i
+					if newTarget == icon2 then
+						TargetUnit(marks[icon2])
+						foundTarget = true
+					end
 				end
 			end
+
 		end
 
 		counter = TA_UpdateIcon(counter,8,marks[8])
@@ -136,7 +138,8 @@ function TA_TargetNextMark()
 	end
 
 	if not getglobal("TAIcon"..nextIcon):IsVisible() then
-		nextIcon = 1
+		TargetNearestEnemy()
+		return
 	end
 
 	TA_OnClick(getglobal("TAIcon"..nextIcon))
