@@ -19,7 +19,6 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton")
 				this:SetWidth(ta_settings.size)
 				this:SetHeight(ta_settings.size)
 				this:SetScript("OnMouseDown", function()
@@ -37,7 +36,7 @@
 
 	<Frame name="TAContainer" toplevel="true" movable="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="400" y="40"/>
+			<AbsDimension x="10" y="10"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />

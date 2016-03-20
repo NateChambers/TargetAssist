@@ -1,9 +1,10 @@
 local lastUpdate = 0
+local locked = true
 BINDING_HEADER_TARGETASSIST = "Target Assist";
 
 function TA_OnUpdate()
 	local time = GetTime()
-	if time - lastUpdate > 0.2 then
+	if time - lastUpdate > 0.2 and locked then
 		lastUpdate = time;
 
 		TA_ScanMarks(nil)
@@ -30,23 +31,16 @@ function TA_ScanMarks(newTarget)
 		for i = 1,num,1 do
 			local icon = GetRaidTargetIndex(prefix..i.."target")
 
-			if icon ~= nil and UnitExists(prefix..i.."target") and not UnitIsDead(prefix..i.."target") then
+			if icon ~= nil and UnitExists(prefix..i.."target") 
+				and not UnitIsDead(prefix..i.."target")
+				and not UnitIsFriend("player",prefix..i.."target") then
+
 				marks[icon] = prefix..i.."target"
 				if newTarget == icon then
 					TargetUnit(marks[icon])
 					foundTarget = true
 				end
-			end
 
-			if includeFriendly == 1 then
-				local icon2 = GetRaidTargetIndex(prefix..i)
-				if icon2 ~= nil and UnitExists(prefix..i) then
-					marks[icon2] = prefix..i
-					if newTarget == icon2 then
-						TargetUnit(marks[icon2])
-						foundTarget = true
-					end
-				end
 			end
 
 		end
@@ -144,3 +138,29 @@ function TA_TargetNextMark()
 
 	TA_OnClick(getglobal("TAIcon"..nextIcon))
 end
+
+function TA_Lock()
+	locked = not locked
+
+	if not locked then
+		for i=1,8,1 do
+			local icon = getglobal("TAIcon"..i)
+			icon:Show()
+			SetRaidTargetIconTexture(getglobal("TAIcon"..i.."Texture"),(9-i))
+			icon:SetAlpha(ta_settings.selectedAlpha)
+			icon:RegisterForDrag("LeftButton")
+		end
+	else
+		for i=1,8,1 do
+			local icon = getglobal("TAIcon"..i)
+			icon:RegisterForDrag(nil)
+		end
+	end
+
+end
+
+SlashCmdList["TA"] = function(_msg)
+	TA_Lock()
+end
+
+SLASH_TA1 = "/ta";
