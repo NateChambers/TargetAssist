@@ -40,9 +40,7 @@ function TA_ScanMarks(newTarget)
 					TargetUnit(marks[icon])
 					foundTarget = true
 				end
-
 			end
-
 		end
 
 		counter = TA_UpdateIcon(counter,8,marks[8])
@@ -74,6 +72,8 @@ function TA_UpdateIcon(counter,index,target)
 		else
 			icon:SetAlpha(ta_settings.unselectedAlpha)
 		end
+
+		getglobal("TAIcon"..counter.."Status"):SetValue(UnitHealth(target))
 
 		return counter + 1
 	else
@@ -149,6 +149,7 @@ function TA_Lock()
 			SetRaidTargetIconTexture(getglobal("TAIcon"..i.."Texture"),(9-i))
 			icon:SetAlpha(ta_settings.selectedAlpha)
 			icon:RegisterForDrag("LeftButton")
+			getglobal("TAIcon"..i.."Status"):SetValue(75)
 		end
 	else
 		for i=1,8,1 do
