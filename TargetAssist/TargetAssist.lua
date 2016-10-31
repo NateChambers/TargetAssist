@@ -73,6 +73,7 @@ function TA_UpdateIcon(counter,index,target)
 			icon:SetAlpha(ta_settings.unselectedAlpha)
 		end
 
+		getglobal("TAIcon"..counter.."Status"):SetMinMaxValues(0, UnitHealthMax(target))
 		getglobal("TAIcon"..counter.."Status"):SetValue(UnitHealth(target))
 
 		return counter + 1
